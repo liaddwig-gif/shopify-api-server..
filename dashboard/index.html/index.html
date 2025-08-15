@@ -1,0 +1,86 @@
+const express = require('express');
+const path = require('path');
+const axios = require('axios');
+
+const app = express();
+const PORT = 3001;
+
+// ---- דשבורד בסיסי ----
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dashboard.html'));
+});
+
+// ---- API לקבלת מידע מ-Shopify ----
+app.get('/api/products', async (req, res) => {
+  try {
+SHOPIFY_STORE_URL=weeii2-zt.myshopify.com
+SHOPIFY_ACCESS_TOKEN=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
+const response = await axios.get(shopifyUrl
+, 
+{
+      headers: {
+        'X-Shopify-Access-Token': accessToken,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    res.json(response.data); // מחזיר JSON לדשבורד
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error fetching products from Shopify');
+  }
+});
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Shopify Dashboard</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #ddd; padding: 8px; }
+    th { background-color: #f2f2f2; }
+  </style>
+</head>
+<body>
+  <h1>Shopify Dashboard</h1>
+  <button id="loadProducts">Load Products</button>
+  <table id="productsTable">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Title</th>
+        <th>Price</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    document.getElementById('loadProducts').addEventListener('click', async () => {
+      const response = await fetch('/api/products');
+      const data = await response.json();
+
+      const tbody = document.querySelector('#productsTable tbody');
+      tbody.innerHTML = ''; // נקה את הטבלה קודם
+
+      data.products.forEach(product => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${product.id}</td>
+          <td>${product.title}</td>
+          <td>${product.variants[0].price}</td>
+        `;
+        tbody.appendChild(row);
+      });
+    });
+  </script>
+</body>
+</html>
+app.get('/', (req, res) => {
+  res.send('<h1>Server is running!</h1>');
+});
