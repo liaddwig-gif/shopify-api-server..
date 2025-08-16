@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Shopify Dashboard</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #ddd; padding: 8px; }
+    th { background-color: #f2f2f2; }
+  </style>
+</head>
+<body>
+  <h1>Shopify Dashboard</h1>
+  <button id="loadProducts">Load Products</button>
+  <table id="productsTable">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Title</th>
+        <th>Price</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    document.getElementById('loadProducts').addEventListener('click', async () => {
+      try {
+        const response = await fetch('/api/products');
+        const data = await response.json();
+
+        const tbody = document.querySelector('#productsTable tbody');
+        tbody.innerHTML = ''; // נקה קודם
+
+        if (data.products && data.products.length > 0) {
+          data.products.forEach(product => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td>${product.id}</td>
+              <td>${product.title}</td>
+              <td>${product.variants[0].price}</td>
+            `;
+            tbody.appendChild(row);
+          });
+        } else {
+          tbody.innerHTML = '<tr><td colspan="3">No products found</td></tr>';
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Error fetching products. Check console.');
+      }
+    });
+  </script>
+</body>
+</html>
